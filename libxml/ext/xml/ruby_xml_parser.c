@@ -1283,12 +1283,11 @@ libxml_xmlErrorFuncHandler(ATTRIBUTE_UNUSED void *ctx, const char *msg, ...)
 #endif
 
 void
-ruby_init_parser(void) {
-	
+ruby_init_parser(void) {	
   cXMLParser = rb_define_class_under(mXML, "Parser", rb_cObject);
   eXMLParserParseError = rb_define_class_under(cXMLParser, "ParseError",
 					       rb_eRuntimeError);
-
+                 
   /* Constants */
   rb_define_const(cXMLParser, "LIBXML_VERSION",
 		  rb_str_new2(LIBXML_DOTTED_VERSION));
@@ -1413,5 +1412,10 @@ ruby_init_parser(void) {
   // set up error handling
   xmlSetGenericErrorFunc(NULL, libxml_xmlErrorFuncHandler);
   xmlThrDefSetGenericErrorFunc(NULL, libxml_xmlErrorFuncHandler);
+
+  // Ruby needs to know about this even though it's not exported, otherwise
+  // our error proc might get garbage collected.
+  rb_global_variable(&libxml_xmlRubyErrorProc);             
+
   id_call = rb_intern("call");
 }

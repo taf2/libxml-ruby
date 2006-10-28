@@ -32,7 +32,7 @@ ruby_xml_attr_child_get(VALUE self) {
   if (rxa->attr->children == NULL)
     return(Qnil);
   else
-    return(ruby_xml_node_new2(cXMLNode, rxa->xd, rxa->attr->children));
+    return(ruby_xml_node_new_ptr(cXMLNode, rxa->xd, rxa->attr->children));
 }
 
 
@@ -102,7 +102,7 @@ ruby_xml_attr_last_get(VALUE self) {
   if (rxa->attr->last == NULL)
     return(Qnil);
   else
-    return(ruby_xml_node_new2(cXMLNode, rxa->xd, rxa->attr->last));
+    return(ruby_xml_node_new_ptr(cXMLNode, rxa->xd, rxa->attr->last));
 }
 
 
@@ -269,7 +269,7 @@ ruby_xml_attr_parent_get(VALUE self) {
   if (rxa->attr->parent == NULL)
     return(Qnil);
   else
-    return(ruby_xml_node_new2(cXMLNode, rxa->xd, rxa->attr->parent));
+    return(ruby_xml_node_new_ptr(cXMLNode, rxa->xd, rxa->attr->parent));
 }
 
 
