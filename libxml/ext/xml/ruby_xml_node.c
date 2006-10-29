@@ -711,14 +711,12 @@ void ruby_xml_node_free(ruby_xml_node *rxn) {
   if (rxn->node != NULL &&            // got a node?
       rxn->node->parent == NULL &&    // unparented (otherwise, it gets freed with parent)
       rxn->node->doc == NULL) {       // No document? (otherwise, freed with doc)
-    if ((int)rxn->node->_private == 1) {
+    if ((int)rxn->node->_private <= 1) {
       // is null or last reference, 
       xmlFreeNode(rxn->node);  
     } else {
-      if (rxn->node->_private != NULL) {
-        // other pointers remain
-        rxn->node->_private--;    
-      }
+      // other pointers remain
+      rxn->node->_private--;    
     }    
   }
 
@@ -1808,9 +1806,7 @@ ruby_xml_node_property_get(VALUE self, VALUE prop) {
 VALUE
 ruby_xml_node_property_set(VALUE self, VALUE key, VALUE val) {
   ruby_xml_node *node;
-  ruby_xml_attr *rxa;
   xmlAttrPtr attr;
-  VALUE rattr;
 
   key = check_string_or_symbol( key );
   Data_Get_Struct(self, ruby_xml_node, node); 
@@ -1829,10 +1825,7 @@ ruby_xml_node_property_set(VALUE self, VALUE key, VALUE val) {
     if (attr == NULL)
       return(Qnil);
   }
-  rattr = ruby_xml_attr_new(cXMLAttr, node->xd, attr);
-  Data_Get_Struct(rattr, ruby_xml_attr, rxa);
-  rxa->is_ptr = 1;
-  return(rattr);
+  return(ruby_xml_attr_new(cXMLAttr, node->xd, attr));
 }
 
 
