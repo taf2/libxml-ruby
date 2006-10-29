@@ -62,7 +62,7 @@ Init_libxml_so(void) {
 
   rb_define_const(mXML, "XML_NAMESPACE", rb_str_new2((const char*)XML_XML_NAMESPACE));
 
-  ruby_init_parser();
+  ruby_init_parser();  
   ruby_init_xml_parser_context();
   ruby_init_xml_attr();
   ruby_init_xml_attribute();
@@ -80,6 +80,8 @@ Init_libxml_so(void) {
   ruby_init_input_callbacks(); /* MUFF */
   ruby_init_xml_dtd();         /* MUFF */
   ruby_init_xml_schema();      /* MUFF */
+
+  ruby_init_html_parser();
 
   ruby_xml_parser_default_substitute_entities_set(cXMLParser, Qtrue);
   ruby_xml_parser_default_load_external_dtd_set(cXMLParser, Qtrue);
