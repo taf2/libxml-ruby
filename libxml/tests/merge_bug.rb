@@ -1,6 +1,7 @@
 #!/usr/local/bin/ruby
 
 require 'libxml_test'
+require 'xml/libxml' # needs the ruby code too
 
 class XML::Node
   def first_child_element
