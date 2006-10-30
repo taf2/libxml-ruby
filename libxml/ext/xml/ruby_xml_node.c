@@ -216,11 +216,6 @@ ruby_xml_node_content_stripped_get(VALUE self) {
     return(rb_str_new2((const char*)xmlNodeGetContent(rxn->node)));
 }
 
-////////////////////////////////////////////////////
-// TODO This whole child thing seems to work in some odd ways.
-//      Try setting child= to a node with multiple children,
-//      then get it back through child= .
-      
 /*
  * call-seq:
  *    node.child => node
@@ -765,7 +760,7 @@ ruby_xml_node_html_doc_q(VALUE self) {
  * call-seq:
  *    XML::Node.new(name, content = nil) => node
  * 
- * Create a new node with the specified name, optionally setting
+ * Create a new element node with the specified name, optionally setting
  * the node's content.
  */
 VALUE
@@ -815,7 +810,86 @@ ruby_xml_node_initialize(int argc, VALUE *argv, VALUE class) {
   return(node);
 }
 
+/*
+ * call-seq:
+ *    XML::Node.new_cdata(content = nil) => node
+ * 
+ * Create a new #CDATA node, optionally setting
+ * the node's content.
+ */
+VALUE
+ruby_xml_node_cdata_initialize(int argc, VALUE *argv, VALUE class) {
+  xmlNode *xnode;
+  VALUE node, str;
 
+  str = Qnil;
+
+  switch(argc) {
+  case 1:
+    str = argv[0];
+    Check_Type(str, T_STRING);
+    if (!NIL_P(str)) {
+      xnode = xmlNewCDataBlock(NULL, (xmlChar*)StringValuePtr(str), xmlStrlen((xmlChar*)StringValuePtr(str)));
+    } else {
+      xnode = xmlNewCDataBlock(NULL, NULL , 0);
+    }
+
+    if (xnode == NULL)
+      return(Qnil);
+      
+    node = ruby_xml_node_new(class, xnode);
+
+    break;
+
+  default:
+    rb_raise(rb_eArgError, "wrong number of arguments (1)");
+  }
+
+  return(node);
+}
+
+
+/*
+ * call-seq:
+ *    XML::Node.new_comment(content = nil) => node
+ * 
+ * Create a new comment node, optionally setting
+ * the node's content.
+ * 
+ */
+VALUE
+ruby_xml_node_comment_initialize(int argc, VALUE *argv, VALUE class) {
+  xmlNode *xnode;
+  VALUE node, str;
+
+  str = Qnil;
+
+  switch(argc) {
+  case 1:
+    str = argv[0];
+    Check_Type(str, T_STRING);
+// TODO  xmlNewComment wrongly? adds \n before and after the comment
+    if (!NIL_P(str)) {
+      xnode = xmlNewComment((xmlChar*)StringValuePtr(str));
+    } else {
+      xnode = xmlNewComment(NULL);
+    }
+
+    if (xnode == NULL)
+      return(Qnil);
+
+    node = ruby_xml_node_new(class, xnode);
+
+    break;
+
+  default:
+    rb_raise(rb_eArgError, "wrong number of arguments (1)");
+  }
+
+  return(node);
+}
+
+ 
 /*
  * call-seq:
  *    node.lang => "string"
@@ -2148,8 +2222,6 @@ ruby_xml_node_xinclude_start_q(VALUE self) {
 }
 
 
-// TODO my gut tells me this is where our sigseg etc. problems start...      
-
 /*
  * call-seq:
  *    node.copy => node
@@ -2201,7 +2273,9 @@ ruby_init_xml_node(void) {
   rb_define_const(cXMLNode, "XLINK_TYPE_SIMPLE", INT2NUM(1));
 
   rb_define_singleton_method(cXMLNode, "new", ruby_xml_node_initialize, -1);
-
+  rb_define_singleton_method(cXMLNode, "new_cdata", ruby_xml_node_cdata_initialize, -1);
+  rb_define_singleton_method(cXMLNode, "new_comment", ruby_xml_node_comment_initialize, -1); 
+  
   rb_define_method(cXMLNode, "<<", ruby_xml_node_content_add, 1);
   rb_define_method(cXMLNode, "[]", ruby_xml_node_property_get, 1);
   rb_define_method(cXMLNode, "[]=", ruby_xml_node_property_set, 2);
