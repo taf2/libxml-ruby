@@ -131,7 +131,7 @@ ruby_xml_node_comment_q(VALUE self) {
 
 /*
  * call-seq:
- *    node << ("string" | node)
+ *    node << ("string" | node) => node
  * 
  * Add the specified string or XML::Node to this node's
  * content.
@@ -143,17 +143,18 @@ ruby_xml_node_content_add(VALUE self, VALUE obj) {
 
   Data_Get_Struct(self, ruby_xml_node, node);
   if (rb_obj_is_kind_of(obj, cXMLNode)) {
-    return(ruby_xml_node_child_set(self, obj));
+    ruby_xml_node_child_set(self, obj);
+    return(self);
   } else if (TYPE(obj) == T_STRING) {
     xmlNodeAddContent(node->node, (xmlChar*)StringValuePtr(obj));
-    return(obj);
+    return(self);
   } else {
     str = rb_obj_as_string(obj);
     if (NIL_P(str) || TYPE(str) != T_STRING)
       rb_raise(rb_eTypeError, "invalid argument: must be string or XML::Node");
 
     xmlNodeAddContent(node->node, (xmlChar*)StringValuePtr(str));
-    return(obj);
+    return(self);
   }
 }
 
