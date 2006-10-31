@@ -759,6 +759,7 @@ ruby_xml_node_html_doc_q(VALUE self) {
 /*
  * call-seq:
  *    XML::Node.new(name, content = nil) => node
+ *    XML::Node.new_element(name, content = nil) => node
  * 
  * Create a new element node with the specified name, optionally setting
  * the node's content.
@@ -2275,6 +2276,9 @@ ruby_init_xml_node(void) {
   rb_define_singleton_method(cXMLNode, "new", ruby_xml_node_initialize, -1);
   rb_define_singleton_method(cXMLNode, "new_cdata", ruby_xml_node_cdata_initialize, -1);
   rb_define_singleton_method(cXMLNode, "new_comment", ruby_xml_node_comment_initialize, -1); 
+  
+  VALUE singleton = rb_singleton_class(cXMLNode);
+  rb_define_alias(singleton, "new_element", "new");
   
   rb_define_method(cXMLNode, "<<", ruby_xml_node_content_add, 1);
   rb_define_method(cXMLNode, "[]", ruby_xml_node_property_get, 1);
